@@ -1,0 +1,29 @@
+
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Credencial {
+  id String @id @default(cuid())
+  ro String
+  name String
+  rg String
+  cpf String
+  consagracao DateTime
+  validade DateTime
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id String @id @default(cuid())
+  email String
+  name String
+  senha String
+  createdAt DateTime @default(now())
+}

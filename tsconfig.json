@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/dashboard/index.tsx",
+    "src/pages/credencial/create.jsx",
+    "src/pages/api/auth/[...nextauth].ts",
+    "src/pages/api/analytics/pageviews.ts",
+    "src/utils/createNumberMask.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

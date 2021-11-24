@@ -1,0 +1,50 @@
+{
+  "name": "e-credencial",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/core": "^0.8.0",
+    "@chakra-ui/react": "^1.6.8",
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@hookform/resolvers": "^2.8.1",
+    "@prisma/client": "^3.5.0",
+    "@types/next-auth": "^3.15.0",
+    "@types/react-slick": "^0.23.7",
+    "browser-image-compression": "^1.0.17",
+    "bson": "^4.5.3",
+    "firebase": "^9.1.1",
+    "framer-motion": "^4.1.17",
+    "next": "^12.0.2",
+    "next-auth": "^3.29.0",
+    "react": "17.0.2",
+    "react-countup": "^6.0.0",
+    "react-currency-input-field": "^3.5.1",
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.16.2",
+    "react-icons": "^4.2.0",
+    "sharp": "^0.29.2",
+    "uuid": "^8.3.2",
+    "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "@types/firebase": "^3.2.1",
+    "@types/node": "^16.10.1",
+    "@types/react": "^17.0.24",
+    "@types/react-beautiful-dnd": "^13.1.2",
+    "@types/react-input-mask": "^3.0.1",
+    "@types/react-modal": "^3.13.1",
+    "@types/yup": "^0.29.13",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2",
+    "prisma": "^3.5.0",
+    "typescript": "^4.4.3"
+  }
+}
