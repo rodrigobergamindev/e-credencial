@@ -97,7 +97,7 @@ export default function AnuncioList() {
     return (
         <Box>
             <Head>
-            <title>Anúncios</title>
+            <title>Credenciais</title>
             <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
             <Header/>
@@ -110,7 +110,7 @@ export default function AnuncioList() {
 
                     <Flex mb="8" justify="space-between" align="center">
                         
-                        <Heading size="lg" fontWeight="normal">Estoque</Heading>
+                        <Heading size="lg" fontWeight="normal">Credenciais</Heading>
 
                         <Flex  justify="flex-end" align="center" alignSelf="flex-end" justifySelf="flex-end" >
 
@@ -131,11 +131,15 @@ export default function AnuncioList() {
                     <Thead>
                         <MotionTr variants={item}>
                             <Th px={["4","4","6"]} width="8">
-                               ANO
+                               EMISSÃO
                             </Th>
 
                             <Th>
-                                VEÍCULO
+                                RO
+                            </Th>
+
+                            <Th>
+                                NOME
                             </Th>
 
                             {!!isWideVersion && <Th> Data de Criação</Th>}
@@ -159,15 +163,24 @@ export default function AnuncioList() {
                         </Td>
 
                         <Td>
+                            
+                            <Text fontWeight="bold" fontSize="sm">1234</Text>
+                         
+                        </Td>
+
+                        <Td>
                             <Link href={`/dashboard/anuncios/editar/1234`} passHref>
                             <Box  cursor="pointer">
-                                <Text fontWeight="bold" fontSize="sm">Potifar da Silva</Text>
+                                <Text fontWeight="bold" fontSize="sm">José da Silva</Text>
                                 {!!isWideVersion && <Text fontWeight="bold" fontSize="sm" color="gray.300">
-                                    Alguma coisa
+                                    Presbítero
                                     </Text>}
                             </Box>
                             </Link>
                         </Td>
+
+
+                        
 
                         {!!isWideVersion && <Td> {new Date(Date.now()).toLocaleDateString('pt-BR', {
                                      day: '2-digit',

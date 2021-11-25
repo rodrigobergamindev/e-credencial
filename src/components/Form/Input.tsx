@@ -17,24 +17,10 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ( {nam
         <FormControl isInvalid={!!error}>
         {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
 
-        {type === "file" ? (<ChakraInput name={name}
-              id={name} 
-              type={type}
-              multiple
-              variant="filled"
-              accept="image/jpeg, image/png, image/jpg"
-              bgColor="gray.900"
-              _hover={{bgColor: 'gray.900'}}
-              size="lg"
-              ref={ref}
-              {...rest}
-              
-            />
-            
-            ) : (
-                <ChakraInput name={name}
+            <ChakraInput name={name}
                 id={name} 
                 focusBorderColor="yellow.400"
+                placeholder={label}
                 bgColor="gray.900"
                 variant="filled"
                 _hover={{
@@ -44,7 +30,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ( {nam
                 ref={ref}
                 {...rest}
               />
-            )}
+            
        
 
   

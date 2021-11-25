@@ -1,43 +1,81 @@
-import { Flex, Button, Stack, Box, Text, Avatar} from '@chakra-ui/react'
-import Logo from '../../components/Header/Logo'
-import { useSession, signIn, signOut } from 'next-auth/client'
-import { useRouter } from "next/router";
+import { Flex, Button, Stack} from '@chakra-ui/react'
+import { Input } from '../../components/Form/Input'
+import {useForm, SubmitHandler} from 'react-hook-form'
+import * as yup from 'yup';
+
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+
 import {GetServerSideProps} from 'next'
-import {getSession} from 'next-auth/client'
-import Head from 'next/head'
+
+import { getSession, signIn, signOut } from 'next-auth/client'
+import { useRouter } from "next/router";
+
+
+type SignInFormData = {
+  email: string;
+  password: string;
+}
+
+const SignInFormSchema = yup.object({
+  email: yup.string().required('E-mail obrigatório').email(),
+  password: yup.string().required('Senha obrigatória')
+})
 
 export default function SignIn() {
 
-  const [session] = useSession()
-  const {asPath} = useRouter()
-  const URL_ERROR = '/login?error=AccessDenied#'
 
- 
+
+  const {register, handleSubmit, formState} = useForm({resolver: yupResolver(SignInFormSchema)})
+
+
+  const handleSignIn: SubmitHandler<SignInFormData> = async (values, event) => {
+    //await new Promise(resolve => setTimeout(resolve,2000))
+
+   
+      const username = values.email
+      const password =  values.password
+    
+
+     await signIn('credentials', { redirect: true, username, password, callbackUrl: 'http://localhost:3000/dashboard'})
+    
+  }
+
+  const {errors} =  formState
 
   return (
-    <Flex w="100%" h="100vh" alignItems="center" justifyContent="center" direction="column">
-      <Head>
-            <title>AutoCerto Cars - Login</title>
-            <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-            </Head>
-      <Logo/>
+    <Flex w="100vw" h="100vh" alignItems="center" justifyContent="center">
+
       <Flex
+        as="form"
         width="100%"
         maxWidth={360}
+        bg="gray.800"
         p="8"
         borderRadius={8}
         flexDirection="column"
+        onSubmit={handleSubmit(handleSignIn)}
       >
-        
-        {asPath === URL_ERROR && (
-          <Text fontSize="sm" align="center" mb="4">Acesso negado, credenciais incorretas</Text>
-        )}
-       <Button colorScheme="yellow" size="lg" onClick={(): Promise<void> => signIn('google', { callbackUrl: 'https://www.autocertocars.com.br/dashboard' })}> Login </Button>
-       {!!session && (
-         <Box flex="1" p="6">  
-          <Button colorScheme="yellow" size="lg" onClick={() => signOut({ callbackUrl: 'https://www.autocertocars.com.br/' })}> Sair </Button>
-         </Box>
-    )}
+
+        <Stack spacing="4">
+       
+       <Input 
+       name="email" 
+       type="email" 
+       label="E-mail" 
+       error={errors.email}
+       {...register('email')}/>
+
+       <Input 
+       name="password" 
+       type="password" 
+       label="Senha" 
+       error={errors.password}
+       {...register('password')}/>
+
+      </Stack>
+
+       <Button type="submit" mt="6" colorScheme="blue" size="lg" isLoading={formState.isSubmitting}> Entrar </Button>
+       
       </Flex>
     </Flex>
   )

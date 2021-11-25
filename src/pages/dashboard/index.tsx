@@ -188,12 +188,12 @@ export default function Dashboard() {
     )
 }
 
-/**
+
 export const getServerSideProps = async ({req}) => {
 
   const session = await getSession({req})
 
-
+  /** 
   const data_anuncios = await prisma.anuncio.findMany()
 
   const data_messages = await prisma.message.findMany()
@@ -203,9 +203,9 @@ export const getServerSideProps = async ({req}) => {
     
   
   const messagesReceived = messages.length > 0 ?  messages.length : 0
-
+  */
   
-  /**if(!session) {
+  if(!session) {
       return {
           redirect: {
               destination: `/login`,
@@ -216,9 +216,7 @@ export const getServerSideProps = async ({req}) => {
   
   return {
     props: {
-        anuncios,
-        messagesReceived
+        session
     }
   }
 }
-*/

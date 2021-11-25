@@ -20,133 +20,63 @@ import { useRouter } from "next/router";
 import {useState} from 'react'
 import { RiAddLine, RiCheckFill, RiCheckLine, RiSubtractLine, RiCloseLine, RiUploadCloudLine} from "react-icons/ri";
 import CurrencyInput from 'react-currency-input-field';
-
+import InputMask from 'react-input-mask';
 import {prisma} from '../../../../db'
 import Head from 'next/head'
 
 import imageCompression from 'browser-image-compression'
 
 
-type CreateAnuncioFormData = {
-    marca: string;
-    modelo: string;
-    ano_fabricacao: string;
-    versao: string;
-    numero_portas: string;
-    cor: string;
-    cores_internas: string;
-    combustivel: string;
-    carroceria: string;
-    potencia: string;
-    transmissao: string;
-    quilometragem: string;
-    valor: string;
-    chave_copia: string;
-    laudo_cautelar: string;
-    manual_do_proprietario: string;
-    opcionais: Opcional[];
-    image: FileList;
-    condicao: string;
+type CreateCredencialFormData = {
+    name: String;
+    cpf: String;
+    rg: String;
+    ro: String;
+    consagracao: String;
+    taxa: String;
+
   }
 
-type ImagePreview = {
-    preview: string | ArrayBuffer;
-    file: File;
-}
-
-type Opcional = {
-    opcional: string;
-}
 
 
 
-
-  const createAnuncioFormSchema = yup.object({
-    marca: yup.string().required('Marca obrigatória'),
-    ano_fabricacao: yup.string().required('Preencha com o ano do veículo'),
-    modelo: yup.string().required('Modelo Obrigatório'),
-    valor: yup.string().required('Informe o valor do veículo'),
-    versao: yup.string().required('Preencha com a vesão'),
-    cor: yup.string().required('Preencha com a cor'),
-    combustivel: yup.string().required('Selecione uma opção'),
-    carroceria: yup.string().required('Selecione uma opção'),
-    chave_copia: yup.string().required('Selecione uma opção'),
-    numero_portas: yup.string().required('Preencha com o número de portas'),
-    cores_internas: yup.string().required('Preencha com as cores internas'),
-    potencia: yup.string().required('Informe a potência do veículo'),
-    transmissao: yup.string().required('Selecione uma opção'),
-    quilometragem: yup.string().required('Informe a quilometragem do veículo'),
-    manual_do_proprietario: yup.string().required('Selecione uma opção'),
-    laudo_cautelar: yup.string().required('Selecione uma opção'),
-    condicao: yup.string().required('Selecione uma opção'),
-    image: yup.mixed(),
-    opcionais: yup.array().of(yup.object({
-        opcional: yup.string().required("Informe o opcional")
-    }))
-            
-        
+  const createCredencialFormSchema = yup.object({
+    name: yup.string().required('Nome obrigatório'),
+    cpf: yup.string().required('CPF obrigatório'),
+    rg: yup.string().required('RG obrigatório'),
+    ro: yup.string().required('RO obrigatório'),
+    consagracao: yup.date().required('Data de consagração obrigatória'),
+    taxa: yup.string().required('Taxa obrigatória'),
+                 
   })
 
 
 
 
-export default function CreateVehicle() {
+export default function CreateCredencial() {
 
     const router = useRouter()
 
     const {register,control, handleSubmit, formState, watch} = useForm({
-        resolver: yupResolver(createAnuncioFormSchema)
+        resolver: yupResolver(createCredencialFormSchema)
     })
 
 
-
-    const {fields, append, remove} = useFieldArray(
-        {
-            control, 
-            name: "opcionais" as const
-        }
-        )
-
     const {errors} = formState
-
-
     
-
-    const [imagesPreview, setImagesPreview] = useState<ImagePreview[]>([])
-    const [createMarca, setCreateMarca] = useState(false)
-    const [loadingPreview, setLoadingPreview] = useState(false)
-    
-    const handleCreateAnuncio: SubmitHandler<CreateAnuncioFormData> = async (values) => {
+    const handleCreateCredencial: SubmitHandler<CreateCredencialFormData> = async (values) => {
         
-        
-        const response = await handleUpload(imagesPreview)
-        const {opcionais} = values
-        const newOpcionais = opcionais.map(opcional => opcional.opcional)
-        
-        const images = response.map(image => {
-            if(image.file) {
-                delete image.file
-            }
-            return image.preview
-        })
-
-        if(images.length > 0){
-            
-            const anuncio = {...values, image: images, opcionais: newOpcionais}
-            await saveAnuncio(anuncio)
-        }
-
-        
+        console.log(values)
 
         
     }
 
     
-    async function saveAnuncio(anuncio) { 
+    async function saveCredencial(credencial) { 
         
-        const response = await fetch('/api/anuncios/create', {
+        const response = await fetch('/api/credencial/create', {
             method: "POST",
-            body: JSON.stringify(anuncio)
+            body: JSON.stringify(credencial)
         })
         
         
@@ -156,7 +86,7 @@ export default function CreateVehicle() {
         }
 
         if(response.ok) {
-            router.push('/dashboard/anuncios')
+            router.push('/dashboard/credencial')
         }
     
         return await response.json()
@@ -186,7 +116,7 @@ export default function CreateVehicle() {
         useWebWorker: true
       }
 
-
+/** 
     const handleImage =  async (event: React.ChangeEvent<HTMLInputElement>) => {
        
         const files = Array.from(event.target.files)
@@ -238,25 +168,14 @@ export default function CreateVehicle() {
        
        
    }
-
-
-  const handleCreateMarca = (event) => {
-        if(event.target.value === 'adicionar') {
-            openCreateMarca()
-        }
-   }
-
-    function openCreateMarca() {
-        setCreateMarca(true)
-    }
-
+*/
 
     
-    
+   
     return (
         <Box>
             <Head>
-            <title>Criar Anúncio</title>
+            <title>Emitir Credencial</title>
             <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
             <Header/>
@@ -265,135 +184,117 @@ export default function CreateVehicle() {
 
                 <Siderbar/>
 
-                {formState.isSubmitting ? (
-                    <Flex
-                    align="center"
-                    justify="center"
-                    flex="1"
-                    height="100vh"
-                    >
-                    <Spinner
-                    thickness="4px"
-                    speed="0.65s"
-                    emptyColor="gray.200"
-                    color="blue.500"
-                    size="xl"
-                  />
-                  <Text ml={4}>Enviando dados...</Text>
-                  </Flex>
-                ) : (
-                formState.isSubmitted ? (
-                    <Flex
-                    align="center"
-                    justify="center"
-                    flex="1"
-                    height="100vh"
-                    >
-                    <Icon as={RiCheckLine} fontSize="40px"/> <Text ml={4}>Anúncio criado com sucesso!</Text>
-                    </Flex>
-                ) : (
+                
                     <Box 
                     as="form"
                     flex="1" 
                     borderRadius={8} 
                     bg="gray.800" p={["6","8"]}
-                    onSubmit={handleSubmit(handleCreateAnuncio)}
+                    onSubmit={handleSubmit(handleCreateCredencial)}
                     >
     
-                    <Heading size="lg" fontWeight="normal">Criar Anúncio</Heading>
+                    <Heading size="lg" fontWeight="normal">Emitir Credencial</Heading>
     
                     <Divider my="6" borderColor="gray.700"/>
     
-    
-                    <VStack spacing="8">
-                    <Heading size="sm" fontWeight="bold" color="gray.300" alignSelf="flex-start">INFORMAÇÕES DO VEÍCULO</Heading>
+                    <HStack>
+                    <HStack flex="1" spacing="8">
+                    <Heading size="sm" fontWeight="bold" color="gray.300" alignSelf="flex-start">INFORMAÇÕES PESSOAIS</Heading>
                         <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
                             
                             
 
     
-                            <Input name="modelo" label="Modelo" error={errors.modelo} {...register('modelo')}/>
-    
-    
-                           
-    
-    
-    
-                            <Input name="versao" label="Versão" error={errors.versao} {...register('versao')}/>
-                            <Input name="numero_portas" error={errors.numero_portas} label="Número de Portas" {...register('numero_portas')}/>
-                            <Input name="cor" label="Cor" error={errors.cor} {...register('cor')}/>
-                            <Input name="cores_internas" label="Cores Interiores" error={errors.cores_internas} {...register('cores_internas')} />
-    
-    
-                            <FormControl isInvalid={!!errors.combustivel}>
+                            <Input name="name" label="Nome" error={errors.name} {...register('name')}/>
+
+                            <FormControl isInvalid={!!errors.cpf}>
                             <FormLabel 
-                            htmlFor="combustivel"
+                            htmlFor="cpf"
                             >
-                                Combustível
+                               CPF
                             </FormLabel>
-                            <Select size="lg" name="combustivel" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Flex"  _hover={{bgColor: 'gray.900'}} {...register('combustivel')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Flex">Flex</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Gasolina">Gasolina</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Diesel">Diesel</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Híbrido">Híbrido</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Elétrico">Elétrico</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="GNV">GNV</option>
-                                </Select>
     
-                                {!!errors.combustivel && (
+                            <ChakraInput
+                             {...register('cpf')}
+                            as={InputMask}
+                            bgColor="gray.900" 
+                            _hover={{bgColor: 'gray.900'}} 
+                            focusBorderColor="yellow.400"  
+                            variant="filled"
+                            placeholder="CPF"
+                            name="cpf" 
+                            id="cpf" 
+                            type="text" 
+                            size="lg"
+                            mask="999.999.999-99"
+                            
+                            />
+                          
+                            {!!errors.cpf && (
                                     <FormErrorMessage>
-                                    {errors.combustivel.message}
+                                    {errors.cpf.message}
                                     </FormErrorMessage>
                                  )}
-                                
-                                  
-                            </FormControl>
                             
-    
-                            <FormControl isInvalid={!!errors.carroceria}>
-                            <FormLabel 
-                            htmlFor="carroceria"
-                            >
-                                Carroceria
-                            </FormLabel>
-                            <Select size="lg" name="carroceria" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Hatch"  _hover={{bgColor: 'gray.900'}} {...register('carroceria')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Hatch">Hatch</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Compacto">Compacto</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="SUV">SUV</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Picape">Picape</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Sedan">Sedan</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Mini Van">Mini Van</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Van">Van</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Van de Painel">Van de Painel</option>
-                                </Select>
-    
-                                {!!errors.carroceria && (
-                                    <FormErrorMessage>
-                                    {errors.carroceria.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
-                            </FormControl>
-    
-                            <Input name="potencia" label="Potência" error={errors.potencia} {...register('potencia')}/>
+                           </FormControl>
+
+                           <Input name="rg" label="RG" error={errors.rg} {...register('rg')}/>
                             
-                            <FormControl isInvalid={!!errors.valor}>
+                          
+    
+                        </SimpleGrid>
+
+                         
+    
+                        <Heading size="sm" fontWeight="bold" color="gray.300" alignSelf="flex-start">INFORMAÇÕES INSTITUCIONAIS</Heading>
+                        <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
+                            
+                        <Input name="ro" label="RO" error={errors.ro} {...register('ro')}/>
+
+                        <FormControl isInvalid={!!errors.consagracao}>
                             <FormLabel 
-                            htmlFor="valor"
+                            htmlFor="consagracao"
                             >
-                                Valor
+                                Data de Consagração
                             </FormLabel>
                             
                             <ChakraInput
-                             {...register('valor')}
+                            {...register('consagracao')}
+                            bgColor="gray.900" 
+                            _hover={{bgColor: 'gray.900'}} 
+                            focusBorderColor="yellow.400"  
+                            variant="filled" 
+                            name="consagracao" 
+                            id="consagracao" 
+                            type="date" 
+                            size="lg"
+                            />
+                         
+                            {!!errors.consagracao && (
+                                    <FormErrorMessage>
+                                    {errors.consagracao.message}
+                                    </FormErrorMessage>
+                                 )}
+                            
+                            </FormControl>
+
+                            
+                        <FormControl isInvalid={!!errors.taxa}>
+                            <FormLabel 
+                            htmlFor="taxa"
+                            >
+                                Taxa
+                            </FormLabel>
+                            
+                            <ChakraInput
+                             {...register('taxa')}
                             as={CurrencyInput}
                             bgColor="gray.900" 
                             _hover={{bgColor: 'gray.900'}} 
                             focusBorderColor="yellow.400"  
                             variant="filled" 
-                            name="valor" 
-                            id="valor" 
+                            name="taxa" 
+                            id="taxa" 
                             type="text" 
                             size="lg"
                             allowNegativeValue={false}
@@ -402,173 +303,23 @@ export default function CreateVehicle() {
                             intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
                             />
                          
-                            {!!errors.valor && (
+                            {!!errors.taxa && (
                                     <FormErrorMessage>
-                                    {errors.valor.message}
+                                    {errors.taxa.message}
                                     </FormErrorMessage>
                                  )}
                             
-                           </FormControl>
-    
-                            <FormControl isInvalid={!!errors.transmissao}>
-                            <FormLabel 
-                            htmlFor="transmissao"
-                            >
-                                Transmissão
-                            </FormLabel>
-                            <Select id="transmissao" size="lg" name="transmissao" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Manual"  _hover={{bgColor: 'gray.900'}} {...register('transmissao')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Manual">Manual</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Automatizado">Automatizado</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Automático">Automático</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Automático de Dupla Embreagem">Automático de Dupla Embreagem</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="CVT">CVT</option>
-                                </Select>
-    
-                                {!!errors.transmissao && (
-                                    <FormErrorMessage>
-                                    {errors.transmissao.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
-                            </FormControl>
-    
-                          
-    
-                            <FormControl isInvalid={!!errors.quilometragem}>
-                            <FormLabel 
-                            htmlFor="quilometragem"
-                            >
-                                Quilometragem
-                            </FormLabel>
-    
-                            <ChakraInput
-                             {...register('quilometragem')}
-                            as={CurrencyInput}
-                            bgColor="gray.900" 
-                            _hover={{bgColor: 'gray.900'}} 
-                            focusBorderColor="yellow.400"  
-                            variant="filled" 
-                            name="quilometragem" 
-                            id="quilometragem" 
-                            type="text" 
-                            size="lg"
-                            groupSeparator="."
-                            disableAbbreviations={true}
-                            allowNegativeValue={false}
-                            />
-                          
-                            {!!errors.quilometragem && (
-                                    <FormErrorMessage>
-                                    {errors.quilometragem.message}
-                                    </FormErrorMessage>
-                                 )}
-                            
-                           </FormControl>
-    
-                           <FormControl isInvalid={!!errors.condicao}>
-                            <FormLabel 
-                            htmlFor="condicao"
-                            >
-                                Condição
-                            </FormLabel>
-                            <Select id="condicao" size="lg" name="condicao" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Manual"  _hover={{bgColor: 'gray.900'}} {...register('condicao')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Novo">Novo</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Seminovo">Seminovo</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Usado">Usado</option>
-                                </Select>
-    
-                                {!!errors.condicao && (
-                                    <FormErrorMessage>
-                                    {errors.condicao.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
                             </FormControl>
     
                         </SimpleGrid>
-    
-                        <Heading size="sm" fontWeight="bold" color="gray.300" alignSelf="flex-start">OUTRAS INFORMAÇÕES</Heading>
-                        <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
-                            
-                            <FormControl isInvalid={!!errors.laudo_cautelar}>
-                            <FormLabel 
-                            htmlFor="laudo_cautelar"
-                            >
-                                Laudo Cautelar
-                            </FormLabel>
-                            <Select size="lg" id="laudo_cautelar" name="laudo_cautelar" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Aprovado"  _hover={{bgColor: 'gray.900'}} {...register('laudo_cautelar')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Aprovado">Aprovado</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Reprovado">Reprovado</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Aprovado com apontamento">Aprovado com apontamento</option>
-                                </Select>
-    
-                                {!!errors.laudo_cautelar && (
-                                    <FormErrorMessage>
-                                    {errors.laudo_cautelar.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
-                            </FormControl>
-                            
-                                
-                           <FormControl isInvalid={!!errors.manual_do_proprietario}>
-                            <FormLabel 
-                            htmlFor="manual_do_proprietario"
-                            >
-                                Manual do Proprietário
-                            </FormLabel>
-                            <Select size="lg" id="manual_do_proprietario" name="manual_do_proprietario" variant="filled" bg="gray.900" focusBorderColor="yellow.500" defaultValue="Sim"  _hover={{bgColor: 'gray.900'}} {...register('manual_do_proprietario')}>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Sim">Sim</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Não">Não</option>
-                                </Select>
-    
-                                {!!errors.manual_do_proprietario && (
-                                    <FormErrorMessage>
-                                    {errors.manual_do_proprietario.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
-                            </FormControl>
-    
-                            
-                            <FormControl isInvalid={!!errors.chave_copia}>
-                            <FormLabel 
-                            htmlFor="chave_copia"
-                            >
-                                Chave Cópia
-                            </FormLabel>
-                            <Select size="lg" id="chave_copia" name="chave_copia" variant="filled" bg="gray.900" focusBorderColor="yellow.500" {...register('chave_copia')}  _hover={{bgColor: 'gray.900'}} defaultValue="Sim">
-                                        <option style={{backgroundColor:"#1F2029"}} value="Sim">Sim</option>
-                                        <option style={{backgroundColor:"#1F2029"}} value="Não">Não</option>
-                                </Select>
-    
-                                {!!errors.chave_copia && (
-                                    <FormErrorMessage>
-                                    {errors.chave_copia.message}
-                                    </FormErrorMessage>
-                                 )}
-                                
-                                  
-                            </FormControl>
-                            
-    
-    
-                        </SimpleGrid>
-                        
-                        <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
+                    
+                    </HStack>
 
-                            
-                        </SimpleGrid>
-    
-                        <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
+                    <SimpleGrid minChildWidth="240px" border="solid" borderColor="red" spacing={["6","8"]} width="100%">
                         
                     
                             
-                            <Box mt={6} display="flex" flexDirection="column"  p={1} gap={2}>
+                            <Box mt={6} border="solid" display="flex" flexDirection="column"  p={1} gap={2}>
                             
                             
                             <FormControl isInvalid={!!errors.image}>
@@ -582,14 +333,7 @@ export default function CreateVehicle() {
                                   <Text fontSize="20px">Escolher imagens</Text>
                                   
                                   </Box>
-                                  <Box>{imagesPreview.length === 0 ? <Text fontSize="20px">Envie no mínimo uma imagem</Text> : <Text fontSize="20px">{imagesPreview.length} imagens selecionadas</Text>}</Box>
-                                  {!!loadingPreview && <HStack ml="1rem"><Spinner
-                    thickness="2px"
-                    speed="0.65s"
-                    emptyColor="gray.200"
-                    color="blue.500"
-                    size="md"
-                  /></HStack>}
+                                  
                                   </Box>
                             
                             </FormLabel>
@@ -597,7 +341,6 @@ export default function CreateVehicle() {
                                 name="image" 
                                 id="image" 
                                 type="file" 
-                                multiple
                                 variant="filled"
                                 accept="image/jpeg, image/png, image/jpg, image/webp"
                                 bgColor="gray.900"
@@ -608,7 +351,7 @@ export default function CreateVehicle() {
                                     bgColor: 'gray.900'
                                 }}
                                 size="lg" 
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleImage(event)}
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => console.log(event)}
                                 />
     
                                  {!!errors.image && (
@@ -626,17 +369,15 @@ export default function CreateVehicle() {
                             </Box>
                             
                     </SimpleGrid>
-                    
-                    </VStack>
-    
+                    </HStack>
                     <Flex mt="8" justify="flex-end">
                         <HStack spacing="4">
-                        <Link href="/dashboard/anuncios" passHref><Button colorScheme="whiteAlpha">Cancelar</Button></Link>
-                            <Button type="submit" colorScheme="blue" isLoading={formState.isSubmitting}>Salvar</Button>
+                        <Link href="/dashboard/credencial" passHref><Button colorScheme="whiteAlpha">Cancelar</Button></Link>
+                            <Button type="submit" colorScheme="blue" isLoading={formState.isSubmitting}>Emitir</Button>
                         </HStack>
                     </Flex>
                     </Box>
-                ))}
+              
                 
             </Flex>
         </Box>
@@ -644,14 +385,10 @@ export default function CreateVehicle() {
 }
 
 
-/**export const getServerSideProps: GetServerSideProps = async({req}) => {
+export const getServerSideProps: GetServerSideProps = async({req}) => {
 
 
     const session = await getSession({req})
-
-    const data = await prisma.marca.findMany()
-
-    const initialValues = await JSON.parse(JSON.stringify(data))
    
 
     if(!session) {
@@ -665,8 +402,8 @@ export default function CreateVehicle() {
     
     return {
       props: {
-          initialValues,
+         session,
         }
     }
   }
-  */
+  

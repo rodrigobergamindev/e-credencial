@@ -1,7 +1,7 @@
 
-import {Flex, useBreakpointValue, IconButton, Icon} from '@chakra-ui/react'
+import {Flex, useBreakpointValue, IconButton, Icon, HStack, Text, Box} from '@chakra-ui/react'
 import Profile from './Profile'
-import Logo from './Logo'
+import Logo from './Logo/index'
 import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext'
 import { RiMenuLine } from 'react-icons/ri'
 
@@ -40,9 +40,18 @@ export default function Header() {
 
             </IconButton>
         )}
-            
-        <Logo/>
-
+        
+        <HStack>
+            <Logo size={100}/>
+            <Box>
+                <Text>
+                    Sistema de e-Credencial Digital
+                </Text>
+                <Text fontSize="small" color="gray.300">
+                    Convenção O Brasil Para Cristo no Estado de São Paulo
+                </Text>
+            </Box>
+        </HStack>
 
         <Flex align="center" ml="auto">
  
