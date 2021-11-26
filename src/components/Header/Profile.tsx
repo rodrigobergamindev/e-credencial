@@ -16,7 +16,7 @@ export default function Profile () {
                     <Box mr="4" textAlign="right">
                         <Text>Rodrigo Bergamin</Text>
                         <Text color="gray.300" fontSize="small">Departamento de Cadastro</Text>
-                        <Text color="gray.300" fontSize="small">{session.user.email}</Text>
+                        <Text color="gray.300" fontSize="small">{!!session && session.user.email}</Text>
                         <Text as="button" color="yellow.400" fontSize="small" onClick={(): Promise<void> => signOut({ callbackUrl: 'http:/localhost:3000/'})}>Sair</Text>
                     </Box>
          
@@ -24,7 +24,7 @@ export default function Profile () {
             <Avatar
                 size="lg"
                 name="Administrador"
-                src={session.user.image}
+                src={!!session && session.user.image}
             >
 
             </Avatar>

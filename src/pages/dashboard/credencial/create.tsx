@@ -34,7 +34,7 @@ type CreateCredencialFormData = {
     ro: String;
     consagracao: String;
     taxa: String;
-
+    image: FileList;
   }
 
 
@@ -47,13 +47,16 @@ type CreateCredencialFormData = {
     ro: yup.string().required('RO obrigatório'),
     consagracao: yup.date().required('Data de consagração obrigatória'),
     taxa: yup.string().required('Taxa obrigatória'),
-                 
+    image: yup.mixed().required()
   })
 
 
 
 
 export default function CreateCredencial() {
+
+    const[imagePreview, setImagePreview] = useState(null)
+    const [loadingPreview, setLoadingPreview] = useState(false)
 
     const router = useRouter()
 
@@ -64,10 +67,11 @@ export default function CreateCredencial() {
 
     const {errors} = formState
     
+    
     const handleCreateCredencial: SubmitHandler<CreateCredencialFormData> = async (values) => {
         
         console.log(values)
-
+        await saveCredencial(values)
         
     }
 
@@ -111,12 +115,12 @@ export default function CreateCredencial() {
     }
 
     const options = {
-        maxSizeMB: 0.3,
+        maxSizeMB: 0.1,
         maxWidthOrHeight: 1024,
         useWebWorker: true
       }
 
-/** 
+
     const handleImage =  async (event: React.ChangeEvent<HTMLInputElement>) => {
        
         const files = Array.from(event.target.files)
@@ -134,18 +138,9 @@ export default function CreateCredencial() {
                 
                     
                 const preview = reader.result
-                
-               
                 const image = {preview, file}
                 
-                const imageAlreadyExistsInPreview = imagesPreview.find(image => image.preview === preview)
-
-                if(!imageAlreadyExistsInPreview){
-                    setImagesPreview((prevImages) =>  [...prevImages, image])
-                }
-                if(imageAlreadyExistsInPreview){
-                    console.log("Não é possível carregar imagens iguais")
-                }
+                setImagePreview(image)
 
                 setTimeout(() => setLoadingPreview(false), 3000)
                 
@@ -161,14 +156,14 @@ export default function CreateCredencial() {
     async function handleRemoveImage(image) {
         
         if(image) {
-           const newImages = imagesPreview.filter(newImage => newImage.file.name != image.file.name)
-           setImagesPreview(newImages)
+           const newImages = imagePreview.filter(newImage => newImage.file.name != image.file.name)
+           setImagePreview(newImages)
         }
 
        
        
    }
-*/
+
 
     
    
@@ -196,9 +191,58 @@ export default function CreateCredencial() {
                     <Heading size="lg" fontWeight="normal">Emitir Credencial</Heading>
     
                     <Divider my="6" borderColor="gray.700"/>
-    
+
                     <HStack>
-                    <HStack flex="1" spacing="8">
+
+                    <VStack mr={5} alignItems="center" justifyContent="center">
+                    <Box border="1px dashed" width="250px" height="250px">
+                        {!!imagePreview && <Image src={imagePreview.preview as string} width="100%" height="100%"/>}
+                    </Box>
+
+                 
+                    <FormControl border="solid" isInvalid={!!errors.image}>
+                        <FormLabel 
+                        htmlFor="image"
+                        >
+                          <Box alignSelf="center" justifySelf="center" width="100%" bg="blue.500" borderRadius="5px" p={2} display="flex" alignItems="center" justifyContent="center" cursor="pointer" transition="all 0.3s ease-in-out" _hover={{opacity: 0.88}}>
+                              <Icon mr={3}  alignSelf="center" fontSize="2xl" as={RiUploadCloudLine}/>
+                              <Text fontSize="lg">Escolher imagem</Text>
+                              
+                              </Box>
+                              
+                            
+                        
+                        </FormLabel>
+                        <ChakraInput 
+                            p={1}
+                            {...register('image')} 
+                            name="image" 
+                            id="image" 
+                            type="file" 
+                            variant="filled"
+                            multiple={false}
+                            accept="image/jpeg, image/png, image/jpg, image/webp"
+                            bgColor="gray.900"
+                            display="none"
+                           
+                            _hover={{
+                                bgColor: 'gray.900'
+                            }}
+                            size="lg" 
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleImage(event)}
+                            />
+
+                             {!!errors.image && (
+                                <FormErrorMessage>
+                                {errors.image.message}
+                                </FormErrorMessage>
+                             )}
+                              
+                        </FormControl>
+                       
+                    </VStack>
+
+                    <VStack flex="1" spacing="8">
                     <Heading size="sm" fontWeight="bold" color="gray.300" alignSelf="flex-start">INFORMAÇÕES PESSOAIS</Heading>
                         <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
                             
@@ -313,62 +357,17 @@ export default function CreateCredencial() {
     
                         </SimpleGrid>
                     
-                    </HStack>
 
-                    <SimpleGrid minChildWidth="240px" border="solid" borderColor="red" spacing={["6","8"]} width="100%">
+                        <SimpleGrid minChildWidth="240px" spacing={["6","8"]} width="100%">
                         
-                    
-                            
-                            <Box mt={6} border="solid" display="flex" flexDirection="column"  p={1} gap={2}>
-                            
-                            
-                            <FormControl isInvalid={!!errors.image}>
-                            <FormLabel 
-                            htmlFor="image"
-                            >
-                                
-                                <Box p={4} display="flex" justifyContent="center" alignItems="center" >
-                              <Box mr={5} maxWidth="240px" bg="blue.500" borderRadius="5px" p={2} display="flex" alignItems="center" justifyContent="center" cursor="pointer" transition="all 0.3s ease-in-out" _hover={{opacity: 0.88}}>
-                                  <Icon mr={3}  alignSelf="center" w={7} h={7} as={RiUploadCloudLine}/>
-                                  <Text fontSize="20px">Escolher imagens</Text>
-                                  
-                                  </Box>
-                                  
-                                  </Box>
-                            
-                            </FormLabel>
-                            <ChakraInput p={1} 
-                                name="image" 
-                                id="image" 
-                                type="file" 
-                                variant="filled"
-                                accept="image/jpeg, image/png, image/jpg, image/webp"
-                                bgColor="gray.900"
-                                display="none"
-                                {...register('image')}
-                               
-                                _hover={{
-                                    bgColor: 'gray.900'
-                                }}
-                                size="lg" 
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => console.log(event)}
-                                />
-    
-                                 {!!errors.image && (
-                                    <FormErrorMessage>
-                                    {errors.image.message}
-                                    </FormErrorMessage>
-                                 )}
-                                  
-                            </FormControl>
+                
+                        
+                </SimpleGrid>
+                    </VStack>
+
 
                                 
-                        
-                            
-                            
-                            </Box>
-                            
-                    </SimpleGrid>
+                   
                     </HStack>
                     <Flex mt="8" justify="flex-end">
                         <HStack spacing="4">

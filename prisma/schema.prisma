@@ -18,6 +18,7 @@ model Credencial {
   consagracao DateTime
   validade DateTime
   createdAt DateTime @default(now())
+  createdBy String
 }
 
 model User {

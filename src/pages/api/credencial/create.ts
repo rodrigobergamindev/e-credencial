@@ -1,79 +1,24 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {prisma} from '../../../../db'
-
-
-
-
-
-
-
-
+import {getSession} from "next-auth/client"
 
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
    
-
+    const session = await getSession({req})
     
     if(req.method !== "POST") {
         return res.status(405).json({ message: 'não ta vindo post'})
     }
 
-  
-        
-        const anuncioData = JSON.parse(req.body) 
-        const name = `${anuncioData.marca} ${anuncioData.modelo}`
-        const anuncio = {...anuncioData, slug: `${anuncioData.marca}-${anuncioData.modelo}-${anuncioData.versao}-${anuncioData.ano_fabricacao.replace('/','-')}`, name}
+        const data = JSON.parse(req.body)
+        const nextYear = new Date(Date.now()).getFullYear() + 1
+        const validade = new Date (new Date(Date.now()).setFullYear(nextYear))
+        const createdBy = session.user.name
 
-        const {marca} = anuncioData
+        const credencial = {...data, createdAt: new Date(Date.now()), validade, createdBy}
 
-
-        const marcaAlreadyExists = await prisma.marca.findUnique({
-            where: {
-              name: marca,
-            },
-          })
-          
-          if(marcaAlreadyExists) {
-            await prisma.anuncio.create({
-                data: {
-                    ...anuncio,
-                    marca: {
-                        connect: {
-                            id: marcaAlreadyExists.id
-                        }
-                    }
-                }
-               })
-          }
-
-          if(marcaAlreadyExists === null){
-              
-            const createMarca = await prisma.marca.create({
-                data: {
-                    name:marca
-                }
-               })
-
-              if(createMarca) {
-                await prisma.anuncio.create({
-                    data: {
-                        ...anuncio,
-                        marca: {
-                            connect: {
-                                id: createMarca.id
-                            }
-                        }
-                    }
-                   })
-              }
-          }
-
-        
-
-  
-        
-    
-    
+        console.log(credencial)
     res.json({message: "Ok"})
 }
 

@@ -115,7 +115,7 @@ export default function AnuncioList() {
                         <Flex  justify="flex-end" align="center" alignSelf="flex-end" justifySelf="flex-end" >
 
                         <Text color="yellow.400" fontWeight="bold" fontSize="20px">
-                            Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(125000)}
+                            Total: 125 ativas - 30 vencidas
                             </Text>
                         <Link href="/dashboard/anuncios/create" passHref><Button as="a" ml={10} size="sm" fontSize="sm" colorScheme="blue" leftIcon={<Icon as={RiAddLine} fontSize="20"></Icon>}>Criar novo</Button></Link>
 
@@ -142,7 +142,9 @@ export default function AnuncioList() {
                                 NOME
                             </Th>
 
-                            {!!isWideVersion && <Th> Data de Criação</Th>}
+                            <Th> Data de Criação</Th>
+
+                            <Th> Emitido por</Th>
 
                             <Th width="8">
                                 
@@ -188,6 +190,9 @@ export default function AnuncioList() {
                                         year: 'numeric'
                     })}</Td>}
 
+                        <Td>
+                            <Text fontWeight="bold" fontSize="sm">Rodrigo Bergamin</Text>
+                        </Td>
                         <Td>
                         {!!isWideVersion && <Link href={'/dashboard/anuncios/editar/123443'} passHref><Button as="a" size="sm" fontSize="sm" colorScheme="blue" leftIcon={<Icon as={RiPencilLine} fontSize="20"></Icon>}>Editar</Button></Link>}
                         
