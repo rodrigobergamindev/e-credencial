@@ -4,12 +4,12 @@ import {getStorage} from 'firebase/storage'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD69QvbYJY9V0hiWaJsIJru3AYZOOEWImo",
-  authDomain: "autocertocars.firebaseapp.com",
-  projectId: "autocertocars",
-  storageBucket: "autocertocars.appspot.com",
-  messagingSenderId: "1048673224893",
-  appId: "1:1048673224893:web:d6a8c549a32548e1ba0fd4"
+  apiKey: "AIzaSyBCEWne8ZsFLeRKXVM4_aNYZNLStE6c3U8",
+  authDomain: "ecredencial-eef66.firebaseapp.com",
+  projectId: "ecredencial-eef66",
+  storageBucket: "ecredencial-eef66.appspot.com",
+  messagingSenderId: "523153703351",
+  appId: "1:523153703351:web:aa2d5ffe2a05daae11e832"
 };
 
 // Initialize Firebase

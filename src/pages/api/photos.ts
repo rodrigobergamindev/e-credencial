@@ -12,6 +12,7 @@ type Photo = {
 type Image = {
     preview: string | ArrayBuffer;
     file: File;
+    name: String;
 }
 
 
@@ -34,27 +35,19 @@ export const getAll = async () => {
     return list;
 }
 
-export const insert = async (images: Image[]) => {
+export const insert = async (image: Image) => {
 
-     const imagesUpload = images.map(async (image) => {
-        if(image.file) {
-            if(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(image.file.type)) {
+       
+       
                
-                const id = createId()
-                const newFile = ref(storage, `images/${id}`);
+    const id = createId()
+    const newFile = ref(storage, `images/${id}`);
             
-                const upload = await uploadBytes(newFile, image.file);
-                const photoUrl = await getDownloadURL(upload.ref);
-                image.preview = photoUrl
-            }
-        }
-        return image 
-     })
-
-     return imagesUpload
-        
+    const upload = await uploadBytes(newFile, image.file);
+    const photoUrl = await getDownloadURL(upload.ref);
+            
+    console.log(photoUrl)
     
-
     
 }
 

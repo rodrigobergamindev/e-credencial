@@ -25,7 +25,7 @@ import {prisma} from '../../../../db'
 import Head from 'next/head'
 
 import imageCompression from 'browser-image-compression'
-
+import axios from "axios";
 
 type CreateCredencialFormData = {
     name: String;
@@ -34,7 +34,6 @@ type CreateCredencialFormData = {
     ro: String;
     consagracao: String;
     taxa: String;
-    image: FileList;
   }
 
 
@@ -70,49 +69,26 @@ export default function CreateCredencial() {
     
     const handleCreateCredencial: SubmitHandler<CreateCredencialFormData> = async (values) => {
         
-        console.log(values)
-        await saveCredencial(values)
+        const credencial = {...values}
+        await saveCredencial(credencial, imagePreview.file)
         
     }
 
     
-    async function saveCredencial(credencial) { 
+    async function saveCredencial(credencial, image) { 
         
-        const response = await fetch('/api/credencial/create', {
-            method: "POST",
-            body: JSON.stringify(credencial)
-        })
-        
-        
-        if(!response.ok) {
-            console.log(response)
-            throw new Error(response.statusText)
-        }
+        let formData = new FormData()
+        formData.append("image", image)
+        formData.append("data", JSON.stringify(credencial))
+   
 
-        if(response.ok) {
-            router.push('/dashboard/credencial')
-        }
-    
-        return await response.json()
-    }
-
-
-    const handleUpload = async (images) => {
-        
-        
-        const result = await insert(images)
-                        
-        if(result instanceof Error) {
-            console.log(`${result.name} - ${result.message}`)
-        }
-        const response = await Promise.all(result)
+       const response = await axios.post("http://localhost:3000/api/credencial/create", formData)
        
-        return response
-            
+        console.log(response)
         
-
-
     }
+
+
 
     const options = {
         maxSizeMB: 0.1,
@@ -123,12 +99,13 @@ export default function CreateCredencial() {
 
     const handleImage =  async (event: React.ChangeEvent<HTMLInputElement>) => {
        
-        const files = Array.from(event.target.files)
         
-        files.map(async (fileUnsized: File) => {
+        
+            const data = event.target.files[0]
+           
             
-            if(fileUnsized.type.includes("image")) {
-                const file = await imageCompression(fileUnsized, options)
+            if(data.type.includes("image")) {
+                const file = await imageCompression(data, options)
                 const reader = new FileReader()
                 
                
@@ -148,7 +125,7 @@ export default function CreateCredencial() {
             
             return null
             }
-        })
+        
     }
 
 
@@ -200,7 +177,7 @@ export default function CreateCredencial() {
                     </Box>
 
                  
-                    <FormControl border="solid" isInvalid={!!errors.image}>
+                    <FormControl isInvalid={!!errors.image}>
                         <FormLabel 
                         htmlFor="image"
                         >
